@@ -6,14 +6,19 @@ import { useIsomorphicLayoutEffect } from '../utils/useIsomorphicLayoutEffect'
 
 function Provider({ store, context, children }) {
   const contextValue = useMemo(() => {
+    //创建一个store的根订阅器，
     const subscription = new Subscription(store)
     subscription.onStateChange = subscription.notifyNestedSubs
     return {
       store,
       subscription,
     }
+    //每次store变化都会创建一个新的contextValue对象
   }, [store])
 
+  /*  获取更新之前的state值 ，函数组件里面的上下文要优先于组件更新渲染，
+  * TODO: 这里后面需要去弄明白为何这里是更新之前的state值
+  */
   const previousState = useMemo(() => store.getState(), [store])
 
   useIsomorphicLayoutEffect(() => {
