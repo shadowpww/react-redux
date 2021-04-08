@@ -27,18 +27,18 @@ export function pureFinalPropsSelectorFactory(
   let ownProps
   let stateProps
   let dispatchProps
-  let mergedProps
-
+  let mergedProps ////合并后的props，最终会被返回
+  /* 第一次 直接使用 ownProps  stateProps  dispatchProps 合并  形成新的 props */
   function handleFirstCall(firstState, firstOwnProps) {
     state = firstState
     ownProps = firstOwnProps
     stateProps = mapStateToProps(state, ownProps)
     dispatchProps = mapDispatchToProps(dispatch, ownProps)
-    mergedProps = mergeProps(stateProps, dispatchProps, ownProps)
+    mergedProps = mergeProps(stateProps, dispatchProps, ownProps) 
     hasRunAtLeastOnce = true
     return mergedProps
   }
-
+  //state 和 props 都发生变化
   function handleNewPropsAndNewState() {
     stateProps = mapStateToProps(state, ownProps)
 
@@ -48,7 +48,7 @@ export function pureFinalPropsSelectorFactory(
     mergedProps = mergeProps(stateProps, dispatchProps, ownProps)
     return mergedProps
   }
-
+  //Props发生变化
   function handleNewProps() {
     if (mapStateToProps.dependsOnOwnProps)
       stateProps = mapStateToProps(state, ownProps)
@@ -59,7 +59,7 @@ export function pureFinalPropsSelectorFactory(
     mergedProps = mergeProps(stateProps, dispatchProps, ownProps)
     return mergedProps
   }
-
+ //state 发生变化
   function handleNewState() {
     const nextStateProps = mapStateToProps(state, ownProps)
     const statePropsChanged = !areStatePropsEqual(nextStateProps, stateProps)
@@ -72,8 +72,8 @@ export function pureFinalPropsSelectorFactory(
   }
 
   function handleSubsequentCalls(nextState, nextOwnProps) {
-    const propsChanged = !areOwnPropsEqual(nextOwnProps, ownProps)
-    const stateChanged = !areStatesEqual(nextState, state)
+    const propsChanged = !areOwnPropsEqual(nextOwnProps, ownProps) //prop是否发生改变，浅比较
+    const stateChanged = !areStatesEqual(nextState, state)  //state 是否发生改变，浅比较
     state = nextState
     ownProps = nextOwnProps
 
@@ -117,7 +117,7 @@ export default function finalPropsSelectorFactory(
   const selectorFactory = options.pure
     ? pureFinalPropsSelectorFactory
     : impureFinalPropsSelectorFactory
-
+  //返回用于生成新的props的函数。
   return selectorFactory(
     mapStateToProps,
     mapDispatchToProps,
